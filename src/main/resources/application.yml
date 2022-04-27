@@ -1,0 +1,9 @@
+server:
+  port: 7777
+
+spring:
+  datasource:
+    username: root
+    password: password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://mysql.com:3306/audiobook?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai&useSSL=false
