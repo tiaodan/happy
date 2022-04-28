@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Slf4j
 @EnableTransactionManagement
-@MapperScan({"com.haha.business.audiobook.dao"})
 @SpringBootApplication
 public class MainApplication {
     public static void main(String[] args) {

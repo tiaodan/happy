@@ -1,12 +1,10 @@
 package com.haha.common.aspect;
 
+import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.After;
-import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -24,69 +22,64 @@ public class LogAspect {
     /**
      * 拦截Controller下的所有方法 com.haha.business.*.controller.*(..)
      * 表示拦截 com.haha.business.* 下的controller的所有 public 方法,方法参数可以是0或任意个
+     * execution 规则 权限控制 返回值 路径（参数）
+     * 参考 : https://blog.csdn.net/weixin_39681171/article/details/113039439
      */
-    @Around("execution(public * com.haha.business.*.controller.*(..))")
+    @Pointcut("execution(public * com.haha.business.audiobook.controller..*.*(..))")
     public void pointcut() throws Throwable{
         // do nothing
     }
 
-    @Before()
-
-    @After()
-
-
     /**
-     * 在切点之前织入
-     * @param joinPoint
+     * 前置方法,在目标方法执行前执行
+     * @param joinPoint  封装了代理方法信息的对象,若用不到则可以忽略不写
      * @throws Throwable
      */
     @Before("pointcut()")
-    public void doBefore(JoinPoint joinPoint) throws Throwable {
-        // 开始打印请求日志
-        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+    public void doBefore(JoinPoint joinPoint) throws Throwable{
+        // 初始化请求对象
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();  // 获取请求属性
         HttpServletRequest request = attributes.getRequest();
-        // 打印请求相关参数
-        log.info("========================================== Start ==========================================");
-        // 打印请求 url
-        log.info("URL            : {}", request.getRequestURL().toString());
-        // 打印 Http method
+
+        // 打印请求日志
+        // 打印controller的全路径和执行方法
+        log.info("=========================================== Start ===========================================");
+        log.info("Class Method   : {} {}", joinPoint.getSignature().getDeclaringTypeName(), joinPoint.getSignature().getName());
+        log.info("Request Args   : {}", JSONObject.toJSONString(joinPoint.getArgs()));
+        // 请求参数相关
+        log.info("URL            : {}", request.getRequestURI());
         log.info("HTTP Method    : {}", request.getMethod());
-        // 打印调用 controller 的全路径以及执行方法
-        log.info("Class Method   : {}.{}", joinPoint.getSignature().getDeclaringTypeName(), joinPoint.getSignature().getName());
-        // 打印请求的 IP
-        log.info("IP             : {}", request.getRemoteAddr());
-        // 打印请求入参
-//        log.debug("Request Args   : {}", JSONObject().toString(joinPoint.getArgs()));  // 不行
-//        log.info("Request Args   : {}", new Gson().toJson(joinPoint.getArgs()));  // 报错 java.lang.UnsupportedOperationException: Attempted to serialize java.lang.Class: java.lang.String. Forgot to register a type adapter?
-        log.info("Request Args   : {}", gson.toJson(joinPoint.getArgs()));
-
+        log.info("IP src         : {}", request.getRemoteAddr());
     }
 
     /**
-     * 在切点之后织入
-     * @throws Throwable
-     */
-    @After("pointcut()")
-    public void doAfter() throws Throwable {
-        log.info("=========================================== End ===========================================");
-        // 每个请求之间空一行
-        log.info("");
-    }
-
-    /**
-     * 环绕
+     * 进入方法内
      * @param proceedingJoinPoint
-     * @return
      * @throws Throwable
+     * 参考： https://blog.csdn.net/lichuangcsdn/article/details/87741811
      */
     @Around("pointcut()")
     public Object doAround(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         long startTime = System.currentTimeMillis();
-        Object result = proceedingJoinPoint.proceed();
-        // 打印出参
-        log.info("Response Args  : {}", new Gson().toJson(result));
-        // 执行耗时
+        Object response = proceedingJoinPoint.proceed();
+
+        // 打印返回内容
+        log.info("Response Args  : {}", JSONObject.toJSONString(response));
+        // 打印耗时
         log.info("Time-Consuming 耗时: {} ms", System.currentTimeMillis() - startTime);
-        return result;
+
+        // 如果这里不返回response, 则目标方法返回值会被置为null
+        return response;
     }
+
+    /**
+     * 方法结束后的操作
+     * @throws Throwable
+     */
+    @After("pointcut()")
+    public void doAfter() throws  Throwable{
+        log.info("=========================================== End ===========================================");
+        log.info("");  // 每个请求空一行
+    }
+
 }
