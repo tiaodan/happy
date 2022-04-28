@@ -15,8 +15,7 @@ import java.util.HashMap;
  * }
  */
 public class JsonResponse extends HashMap<String, Object> {
-
-    private static final long serialVersionUID = -9127814456406791924L;
+    private static final long serialVersionUID = -1787160256525331350L;
 
     // 重写put方法
     @Override

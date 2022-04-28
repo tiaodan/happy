@@ -1,13 +1,15 @@
-package com.haha.business;
+package com.haha;
 
 import lombok.extern.slf4j.Slf4j;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Slf4j
-@SpringBootApplication
+@EnableTransactionManagement
 @MapperScan({"com.haha.business.audiobook.dao"})
+@SpringBootApplication
 public class MainApplication {
     public static void main(String[] args) {
         SpringApplication.run(MainApplication.class);

@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
@@ -52,9 +51,12 @@ public class TypeController extends BaseController {
     @GetMapping
     public Map<String, Object> selectTypeByCondition(QueryRequest queryRequest){
         // 1. 处理参数
+        log.info("current=" + queryRequest.getCurrent());
+        log.info("size" +  queryRequest.getSize());
         // 2. 调用service
         IPage<Type> iPageArgs = new Page<>(queryRequest.getCurrent(), queryRequest.getSize());
-        IPage<Type> typeIPage = typeService.page(iPageArgs);
+//        IPage<Type> typeIPage = typeService.page(iPageArgs);
+        IPage<Type> typeIPage = typeService.page(new Page<>(1, 2));
 
         // 3. 返回
         return new JsonResponse().returnCode(ReturnCode.OK).message(ReturnMessage.OK).data(getDataBody(typeIPage));
