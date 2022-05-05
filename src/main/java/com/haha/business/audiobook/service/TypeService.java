@@ -5,5 +5,4 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.haha.business.audiobook.domain.Type;
 
 public interface TypeService extends IService<Type> {
-    IPage<Type> getTypeAll();
 }

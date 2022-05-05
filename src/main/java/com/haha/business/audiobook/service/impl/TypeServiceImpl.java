@@ -14,9 +14,4 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(rollbackFor = Exception.class)
 public class TypeServiceImpl extends ServiceImpl<TypeMapper, Type> implements TypeService {
 
-    @Override
-    public IPage<Type> getTypeAll() {
-        log.info(list().toString());
-        return null;
-    }
 }
